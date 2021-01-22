@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@alicloud/pop-core": "^1.7.10",
     "alibabacloud-iot-device-sdk": "^1.2.8",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "rhea": "^1.0.24"
   }
 }

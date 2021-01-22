@@ -1,6 +1,7 @@
 
 const stuDao=require('../dao/app1Dao')
-const iot = require('alibabacloud-iot-device-sdk');
+const iot = require('alibabacloud-iot-device-sdk'); 
+var cz = "NORMAL"
 const device = iot.device({
     productKey: 'a12KMp6q0o8', //将<productKey>修改为实际产品的ProductKey
     deviceName: 'hum777',//将<deviceName>修改为实际设备的DeviceName
@@ -16,16 +17,38 @@ const device = iot.device({
   device.on('message', (topic, payload) => {
 //  /   console.log(topic, payload.toString());
   }); 
-  const cz = "on"
+  const int = setInterval(() => {
+    var sql="SELECT value FROM device WHERE id = "+'013' ;
+    stuDao.getStuDao(sql,[],function(err,result){
+      if(err){
+        console.log('[SELECT ERROR] - ',err.message);
+        return;
+      }
+   //console.log(result)
+   const mid=JSON.parse(JSON.stringify(result));
+   if(JSON.stringify(mid) === '[]'){
+  
+   }else{
+    //console.log(tem)
+    const zz=mid[0].value;
+    //console.log(zz)
+    if(zz > 60){
+      cz = "HIGH"
+      //console.log(zt)
+    }else{
+      cz = "NORMAL"
+     }
+   }
+    })
+  }, 500);
 module.exports={ 
     hum(req,resp){
-       const id = req.params['id'];   
-       const values = req.params['values']
-   
-        //console.log("1111")
-       var zz=[id,'hum',values,cz];
-       var zzz=[values,cz,id]
-       stuDao.getStuDao("INSERT INTO device (id,type,value,cz) VALUES (?,?,?,?)",zz,function(err,data){
+      const id = req.params['id'];   
+      const values = req.params['values']
+      //console.log(values);
+      var zz=[id,'hum',values,cz];
+      var zzz=[values,cz,id]
+      stuDao.getStuDao("INSERT INTO device (id,type,value,cz) VALUES (?,?,?,?)",zz,function(err,data){
         if(err){
          // console.log('[SELECT ERROR] - ',err.message);
           return;
@@ -34,15 +57,17 @@ module.exports={
     var sql='UPDATE device SET value = ?, cz= ? WHERE id = ?';
     stuDao.getStuDao(sql,zzz,function(err,data){
       if(err){
-        //console.log('[SELECT ERROR] - ',err.message);
+        console.log('[SELECT ERROR] - ',err.message);
         return;
       }
   })  
-   humi= parseInt(values);
+      humi= parseInt(values);
+      //console.log(humi);
       device.postProps({
-        CurrentHumidity: humi 
+        CurrentHumidity: humi
         }, (res) => {
         });	
         resp.end(); 
-}
+},
+
 }
